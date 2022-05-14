@@ -32,7 +32,9 @@ class DataCleaner:
         self.df.drop(columns, axis=1, inplace=True)
         return self.df
 
-    def change_columns_type_to(self, cols: list, data_type: str) -> pd.DataFrame:
+    def change_columns_type_to(
+        self, cols: list, data_type: str
+    ) -> pd.DataFrame:
         """
         Returns a DataFrame where the specified columns data types are changed to the specified data type
         Parameters
@@ -50,11 +52,13 @@ class DataCleaner:
             for col in cols:
                 self.df[col] = self.df[col].astype(data_type)
         except:
-            print('Failed to change columns type')
+            print("Failed to change columns type")
 
         return self.df
 
-    def remove_single_value_columns(self, unique_value_counts: pd.DataFrame) -> pd.DataFrame:
+    def remove_single_value_columns(
+        self, unique_value_counts: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         Returns a DataFrame where columns with a single value are removed
         Parameters
@@ -67,7 +71,10 @@ class DataCleaner:
         pd.DataFrame
         """
         drop_cols = list(
-            unique_value_counts.loc[unique_value_counts['Unique Value Count'] == 1].index)
+            unique_value_counts.loc[
+                unique_value_counts["Unique Value Count"] == 1
+            ].index
+        )
         return self.df.drop(drop_cols, axis=1, inplace=True)
 
     def remove_duplicates(self) -> pd.DataFrame:
@@ -84,7 +91,9 @@ class DataCleaner:
         removables = self.df[self.df.duplicated()].index
         return self.df.drop(index=removables, inplace=True)
 
-    def fill_numeric_values(self, missing_cols: list, acceptable_skewness: float = 5.0) -> pd.DataFrame:
+    def fill_numeric_values(
+        self, missing_cols: list, acceptable_skewness: float = 5.0
+    ) -> pd.DataFrame:
         """
         Returns a DataFrame where numeric columns are filled with either median or mean based on their skewness
         Parameters
@@ -102,7 +111,9 @@ class DataCleaner:
         df_skew_data = self.df[missing_cols]
         df_skew = df_skew_data.skew(axis=0, skipna=True)
         for i in df_skew.index:
-            if(df_skew[i] < acceptable_skewness and df_skew[i] > (acceptable_skewness * -1)):
+            if df_skew[i] < acceptable_skewness and df_skew[i] > (
+                acceptable_skewness * -1
+            ):
                 value = self.df[i].mean()
                 self.df[i].fillna(value, inplace=True)
             else:
@@ -111,7 +122,9 @@ class DataCleaner:
 
         return self.df
 
-    def fill_non_numeric_values(self, missing_cols: list, ffill: bool = True, bfill: bool = False) -> pd.DataFrame:
+    def fill_non_numeric_values(
+        self, missing_cols: list, ffill: bool = True, bfill: bool = False
+    ) -> pd.DataFrame:
         """
         Returns a DataFrame where non-numeric columns are filled with forward or backward fill
         Parameters
@@ -130,23 +143,25 @@ class DataCleaner:
         pd.DataFrame
         """
         for col in missing_cols:
-            if(ffill == True and bfill == True):
-                self.df[col].fillna(method='ffill', inplace=True)
-                self.df[col].fillna(method='bfill', inplace=True)
+            if ffill == True and bfill == True:
+                self.df[col].fillna(method="ffill", inplace=True)
+                self.df[col].fillna(method="bfill", inplace=True)
 
-            elif(ffill == True and bfill == False):
-                self.df[col].fillna(method='ffill', inplace=True)
+            elif ffill == True and bfill == False:
+                self.df[col].fillna(method="ffill", inplace=True)
 
-            elif(ffill == False and bfill == True):
-                self.df[col].fillna(method='bfill', inplace=True)
+            elif ffill == False and bfill == True:
+                self.df[col].fillna(method="bfill", inplace=True)
 
             else:
-                self.df[col].fillna(method='bfill', inplace=True)
-                self.df[col].fillna(method='ffill', inplace=True)
+                self.df[col].fillna(method="bfill", inplace=True)
+                self.df[col].fillna(method="ffill", inplace=True)
 
         return self.df
 
-    def create_new_columns_from(self, new_col_name: str, col1: str, col2: str, func) -> pd.DataFrame:
+    def create_new_columns_from(
+        self, new_col_name: str, col1: str, col2: str, func
+    ) -> pd.DataFrame:
         """
         Returns a DataFrame where a new column is created using a function on two specified columns
         Parameters
@@ -177,7 +192,7 @@ class DataCleaner:
 
         Args:
         -----
-        columns: 
+        columns:
             Type: list
 
         Returns:
@@ -185,14 +200,15 @@ class DataCleaner:
         pd.DataFrame
         """
         try:
-            megabyte = 1*10e+5
+            megabyte = 1 * 10e5
             for col in columns:
                 self.df[col] = self.df[col] / megabyte
                 self.df.rename(
-                    columns={col: f'{col[:-7]}(MegaBytes)'}, inplace=True)
+                    columns={col: f"{col[:-7]}(MegaBytes)"}, inplace=True
+                )
 
         except:
-            print('failed to change values to megabytes')
+            print("failed to change values to megabytes")
 
         return self.df
 
@@ -208,8 +224,11 @@ class DataCleaner:
         -------
         pd.DataFrame
         """
-        self.df[column] = np.where(self.df[column] > self.df[column].quantile(
-            0.95), self.df[column].median(), self.df[column])
+        self.df[column] = np.where(
+            self.df[column] > self.df[column].quantile(0.95),
+            self.df[column].median(),
+            self.df[column],
+        )
 
         return self.df
 
@@ -227,8 +246,11 @@ class DataCleaner:
         """
         try:
             for column in columns:
-                self.df[column] = np.where(self.df[column] > self.df[column].quantile(
-                    0.95), self.df[column].median(), self.df[column])
+                self.df[column] = np.where(
+                    self.df[column] > self.df[column].quantile(0.95),
+                    self.df[column].median(),
+                    self.df[column],
+                )
         except:
             print("Cant fix outliers for each column")
 
@@ -236,7 +258,7 @@ class DataCleaner:
 
     def save_clean_data(self, name: str):
         """
-        The objects dataframe gets saved with the specified name 
+        The objects dataframe gets saved with the specified name
         Parameters
         ----------
         name:
