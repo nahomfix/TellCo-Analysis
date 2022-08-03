@@ -1,0 +1,5 @@
+[08-03-2022 19:10:18] : INFO : {data_cleaner.py : 43} - Missing values percentage returned
+[08-03-2022 19:12:43] : INFO : {data_cleaner.py : 63} - Duplicate count returned
+[08-03-2022 19:12:59] : INFO : {data_cleaner.py : 84} - Outliers treated
+[08-03-2022 20:23:49] : INFO : {data_cleaner.py : 43} - Missing values percentage returned
+[08-03-2022 20:28:16] : INFO : {data_cleaner.py : 43} - Missing values percentage returned
